@@ -4,8 +4,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 
+import com.weijiangzhu.minaserver.entity.User;
+import com.weijiangzhu.minaserver.protobuf.GooglebufUtil;
 import com.weijiangzhu.minaserver.util.IPUtil;
 
 public class DefautMessageDispatcher implements IMessageDispatcher {
@@ -33,13 +36,16 @@ public class DefautMessageDispatcher implements IMessageDispatcher {
 		return sessionCache.values();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void sendMessage(IoSession session, Integer msgType, Object body) {
-		sendMessage(session, new Message(msgType, body));
-	}
-
-	@Override
-	public void sendMessage(IoSession session, Message message) {
-		session.write(message);
+	public <T> void sendMessage(IoSession session, Integer msgType, T t) {
+		Class<T> cls = (Class<T>) t.getClass();
+		byte[] bytes = GooglebufUtil.processEncode(t, cls);
+		IoBuffer ioBuffer = IoBuffer.allocate(bytes.length + 8);
+		ioBuffer.putInt(bytes.length);
+		ioBuffer.putInt(msgType);
+		ioBuffer.put(bytes);
+		ioBuffer.flip();
+		session.write(ioBuffer);
 	}
 }

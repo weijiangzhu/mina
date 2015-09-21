@@ -10,6 +10,10 @@ public class User {
 		this.age = age;
 	}
 
+	public User(int age) {
+		this.age = age;
+	}
+
 	public User(int age, List<Car> cars) {
 		this.age = age;
 		this.cars = cars;

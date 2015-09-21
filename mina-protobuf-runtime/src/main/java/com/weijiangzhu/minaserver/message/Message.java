@@ -4,13 +4,13 @@ public class Message {
 	private Integer msgType;
 	private Object body;
 
-	public Message(Integer msgType, Object obj) {
+	public Message(Integer msgType, Object body) {
 		this.msgType = msgType;
-		this.body = obj;
+		this.body = body;
 	}
 
-	public Message(Object obj) {
-		this.body = obj;
+	public Object getBody() {
+		return body;
 	}
 
 	public Integer getMsgType() {
@@ -19,9 +19,5 @@ public class Message {
 
 	public void setMsgType(Integer msgType) {
 		this.msgType = msgType;
-	}
-
-	public Object getBody() {
-		return body;
 	}
 }

@@ -1,6 +1,6 @@
 package com.weijiangzhu.minaserver.entity;
 
-public class Car {
+public class Car  {
 	String name;
 
 	public Car(String name) {

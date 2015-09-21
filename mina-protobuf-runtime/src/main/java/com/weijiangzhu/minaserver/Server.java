@@ -9,25 +9,19 @@ import java.util.List;
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 
 import com.weijiangzhu.minaserver.entity.Car;
 import com.weijiangzhu.minaserver.entity.User;
-import com.weijiangzhu.minaserver.message.Message;
 import com.weijiangzhu.minaserver.message.MessageHandler;
 import com.weijiangzhu.minaserver.message.MessageType;
 import com.weijiangzhu.minaserver.messageProcessor.UserProcessor;
-import com.weijiangzhu.minaserver.protobuf.ProtobufDecoder;
-import com.weijiangzhu.minaserver.protobuf.ProtobufEncoder;
 
 public class Server {
 	public static void main(String[] args) throws IOException, InterruptedException {
 		IoAcceptor acceptor = new NioSocketAcceptor();
 		acceptor.getFilterChain().addLast("logger", new LoggingFilter());
-		acceptor.getFilterChain().addLast("codec",
-				new ProtocolCodecFilter(new ProtobufEncoder(), new ProtobufDecoder()));
 		MessageHandler messageHandler = new MessageHandler();
 		messageHandler.putMessageProcessor(MessageType.USERINFO, new UserProcessor());
 		acceptor.setHandler(messageHandler);
@@ -44,7 +38,7 @@ public class Server {
 				Thread.sleep(3000);
 			} else {
 				for (IoSession ioSession : sessions) {
-					ioSession.write(new Message(1000, new User(1, cars)));
+					messageHandler.getMessageDispatcher().sendMessage(ioSession, 1000, new User(1, cars));
 					continue;
 				}
 				break;

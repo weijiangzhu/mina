@@ -3,6 +3,7 @@ package com.weijiangzhu.minaserver.message;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
@@ -46,10 +47,14 @@ public class MessageHandler extends IoHandlerAdapter {
 
 	@Override
 	public void messageReceived(IoSession session, Object message) throws Exception {
-		if (message instanceof Message) {
-			Message msg = (Message) message;
-			IMessageProcessor messageProcessor = messageProcessorCache.get(msg.getMsgType());
-			messageProcessor.onMessage(session, msg.getBody());
+		if (message instanceof IoBuffer) {
+			IoBuffer ioBuffer = (IoBuffer) message;
+			int lenth = ioBuffer.getInt();
+			int msgType = ioBuffer.getInt();
+			byte[] bytes = new byte[lenth];
+			ioBuffer.get(bytes);
+			IMessageProcessor messageProcessor = messageProcessorCache.get(msgType);
+			messageProcessor.onMessage(session, bytes);
 		}
 	}
 

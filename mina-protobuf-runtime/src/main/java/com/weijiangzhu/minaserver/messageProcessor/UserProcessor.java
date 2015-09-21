@@ -12,6 +12,5 @@ public class UserProcessor extends MessageProcessor<User> {
 	@Override
 	protected void processMessage(IoSession session, User user) {
 		log.debug("UserProcessor:" + user);
-//		session.write
 	}
 }
